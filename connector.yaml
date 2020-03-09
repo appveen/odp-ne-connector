@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ne-connector
+  namespace: __namespace__
+spec:
+  type: ClusterIP
+  selector:
+    app: ne-connector
+    release: 1.0.0
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: ne-connector
+  namespace: __namespace__
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ne-connector
+      release: 1.0.0
+  template:
+    metadata:
+      labels:
+        app: ne-connector
+        release: 1.0.0
+    spec:
+      serviceAccountName: odp-admin
+      containers:
+        - name: ne-connector
+          image: 'odp:ne-connector.1.0.0'
+          ports:
+            - containerPort: 3000
